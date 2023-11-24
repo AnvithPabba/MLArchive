@@ -1,42 +1,17 @@
-<html>
-    <style>
-        body{ 
-          font-size: 15pt;
-          font-family: arial;
-        }
-      </style>
+<!-- model_info.html -->
+{% extends 'base.html' %}
 
-<body>
-    <header>
-        <!-- <button id="Enter" type="button" onclick="window.location.href = '/models' ; " class="button">Models</button>
-        <button id="Enter" type="button" onclick="window.location.href = '/datasets' ; " class="button">Datasets</button>
-        <button id="Enter" type="button" onclick="window.location.href = '/login' ; " class="button">Log In</button> -->
-    
-        <a href="{{ url_for('view_models') }}">Models</a>
-        <a href="{{ url_for('view_datasets') }}">Datasets</a>
+{% block title %}Model Info{% endblock %}
 
-        {% if session['username'] != None%}
-        
-        <a href="{{ url_for('index') }}">Sign Out</a>
-
-        {% else %}
-        
-        <a href="{{ url_for('view_login') }}">Log in</a>
-
-        {% endif %}
-    
-    </header>
-
-    <h1>
-    Model Info
-    </h1>
+{% block content %}
+    <h1>Model Info</h1>
 
     <table>
-        {% for n in temp%}
-        <tr>
-            <td>{{n[0]}}:</td>
-            <td>{{n[1]}}</td>
-        </tr>
+        {% for n in temp %}
+            <tr>
+                <td>{{ n[0] }}:</td>
+                <td>{{ n[1] }}</td>
+            </tr>
         {% endfor %}
     </table>
 
@@ -48,17 +23,12 @@
             <th>time_stamp</th>
             <th>version</th>
         </tr>
-        {% for m in revs%}
-        <tr>
-            <td>{{m[0]}}</td>
-            <td>{{m[1]}}</td>
-            <td>{{m[2]}}</td>
-        </tr>
+        {% for m in revs %}
+            <tr>
+                <td>{{ m[0] }}</td>
+                <td>{{ m[1] }}</td>
+                <td>{{ m[2] }}</td>
+            </tr>
         {% endfor %}
-
-    
-
-
-</body>
-
-</html>
+    </table>
+{% endblock %}

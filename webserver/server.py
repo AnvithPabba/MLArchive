@@ -110,27 +110,29 @@ def index():
   """
 
   # DEBUG: this is debugging code to see what request looks like
-  print(request.args)
+  # print(request.args)
+
+
 
   #
   # example of a database query 
   #
-  cursor = g.conn.execute(text("SELECT name FROM test"))
-  g.conn.commit()
+  # cursor = g.conn.execute(text("SELECT name FROM test"))
+  # g.conn.commit()
 
-  # 2 ways to get results
+  # # 2 ways to get results
 
-  # Indexing result by column number
-  names = []
-  for result in cursor:
-    names.append(result[0])  
+  # # Indexing result by column number
+  # names = []
+  # for result in cursor:
+  #   names.append(result[0])  
 
-  # Indexing result by column name
-  names = []
-  results = cursor.mappings().all()
-  for result in results:
-    names.append(result["name"])
-  cursor.close()
+  # # Indexing result by column name
+  # names = []
+  # results = cursor.mappings().all()
+  # for result in results:
+  #   names.append(result["name"])
+  # cursor.close()
 
   #
   # Flask uses Jinja templates, which is an extension to HTML where you can
@@ -158,14 +160,24 @@ def index():
   #     <div>{{n}}</div>
   #     {% endfor %}
   #
-  context = dict(data = names)
+  # context = dict(data = names)
+
+
+  
 
 
   #
   # render_template looks in the templates/ folder for files.
   # for example, the below file reads template/index.html
   #
-  return render_template("index.html", **context)
+  return render_template("index.html")#, **context)
+
+@app.route('/logging_out')
+def logging_out():
+  session.clear()
+  return render_template("index.html")
+  
+
 
 
 

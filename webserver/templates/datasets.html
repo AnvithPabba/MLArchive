@@ -1,54 +1,21 @@
-<html>
-    <style>
-        body{ 
-          font-size: 15pt;
-          font-family: arial;
-        }
-      </style>
+<!-- datasets.html -->
+{% extends 'base.html' %}
 
-<body>
-    <header>
-        <!-- <button id="Enter" type="button" onclick="window.location.href = '/models' ; " class="button">Models</button>
-        <button id="Enter" type="button" onclick="window.location.href = '/datasets' ; " class="button">Datasets</button>
-        <button id="Enter" type="button" onclick="window.location.href = '/login' ; " class="button">Log In</button> -->
-    
-        <a href="{{ url_for('view_models') }}">Models</a>
-        <a href="{{ url_for('view_datasets') }}">Datasets</a>
+{% block title %}Datasets{% endblock %}
 
-        {% if session['username'] != None%}
-        
-        <a href="{{ url_for('index') }}">Sign Out</a>
-
-        {% else %}
-        
-        <a href="{{ url_for('view_login') }}">Log in</a>
-
-        {% endif %}
-    
-    </header>
-
-    <h1>
-    Datasets
-    </h1>
+{% block content %}
+    <h1>Datasets</h1>
 
     <table>
         <tr>
             <th>Dataset ID</th>
             <th>Dataset Name</th>
         </tr>
-        {% for n in temp%}
-        
-        <tr>
-            <td>{{n[0]}}</td>
-            <td><a href = "{{ url_for('view_specific_dataset', dataset_id=n[0])}}">{{n[1]}}</a></td>
-        </tr>
+        {% for n in temp %}
+            <tr>
+                <td>{{ n[0] }}</td>
+                <td><a href="{{ url_for('view_specific_dataset', dataset_id=n[0]) }}">{{ n[1] }}</a></td>
+            </tr>
         {% endfor %}
-        
     </table>
-
-    
-
-
-</body>
-
-</html>
+{% endblock %}
