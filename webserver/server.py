@@ -12,7 +12,7 @@ import os
   # accessible as a variable in index.html:
 from sqlalchemy import *
 from sqlalchemy.pool import NullPool
-from flask import Flask, request, render_template, g, redirect, Response, abort
+from flask import Flask, request, render_template, g, redirect, Response, abort, session
 
 tmpl_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'templates')
 app = Flask(__name__, template_folder=tmpl_dir)
@@ -29,7 +29,7 @@ app = Flask(__name__, template_folder=tmpl_dir)
 #
 #     DATABASEURI = "postgresql://gravano:foobar@34.75.94.195/proj1part2"
 #
-DATABASEURI = "postgresql://user:password@34.75.94.195/proj1part2"
+DATABASEURI = "postgresql://nj2513:061380@34.74.171.121/proj1part2"
 
 
 #
@@ -112,6 +112,8 @@ def index():
   # DEBUG: this is debugging code to see what request looks like
   print(request.args)
 
+  session["is_user_logged_in"] = False
+
 
   #
   # example of a database query 
@@ -167,6 +169,65 @@ def index():
   # for example, the below file reads template/index.html
   #
   return render_template("index.html", **context)
+
+session = {}
+@app.route('/models')
+def view_models():
+  return render_template("models.html")
+
+@app.route('/datasets')
+def view_datasets():
+  return render_template("datasets.html")
+
+@app.route('/login', methods = ["GET", "POST"])
+def view_login():
+
+  if request.method == "POST":
+
+    # print(request.form.get("username"))
+    # print(request.form.get("password"))
+    username = request.form.get("username")
+    password = request.form.get("password")
+    params = {'username':username, 'password':password}
+    query = text("SELECT username,password FROM customer WHERE username = :username and password = :password")
+    cursor = conn.execute(query, params)
+    conn.commit() 
+
+    print(cursor)
+    print("hello!")
+
+    if cursor.rowcount == 0:
+      return render_template("login.html", error = "Invalid credentials")
+    else:
+      session['username']=request.form.get("username")
+      session["is_user_logged_in"] = True
+      return redirect("/postlogin")
+
+
+  return render_template("login.html")
+
+@app.route('/postlogin')
+def view_postlogin():
+  username = session['username']
+  return render_template("postlogin.html", username=username)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 #
 # This is an example of a different path.  You can see it at:
