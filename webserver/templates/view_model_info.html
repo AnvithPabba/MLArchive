@@ -28,25 +28,33 @@
     </header>
 
     <h1>
-    Models
+    Model Info
     </h1>
 
     <table>
-        <tr>
-            <th>Model ID</th>
-            <th>Model Name</th>
-            <th>Number of Downloads</th>
-        </tr>
         {% for n in temp%}
-        
         <tr>
-            <td>{{n[0]}}</td>
-            <td><a href = "{{ url_for('view_specific_model', model_id=n[0])}}">{{n[1]}}</a></td>
-            <td>{{n[2]}}</td>
+            <td>{{n[0]}}:</td>
+            <td>{{n[1]}}</td>
         </tr>
         {% endfor %}
-        
     </table>
+
+    <h1>Version History</h1>
+
+    <table>
+        <tr>
+            <th>model_id</th>
+            <th>time_stamp</th>
+            <th>version</th>
+        </tr>
+        {% for m in revs%}
+        <tr>
+            <td>{{m[0]}}</td>
+            <td>{{m[1]}}</td>
+            <td>{{m[2]}}</td>
+        </tr>
+        {% endfor %}
 
     
 

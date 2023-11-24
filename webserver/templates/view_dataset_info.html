@@ -28,25 +28,43 @@
     </header>
 
     <h1>
-    Models
+    Dataset Info
     </h1>
 
     <table>
-        <tr>
-            <th>Model ID</th>
-            <th>Model Name</th>
-            <th>Number of Downloads</th>
-        </tr>
         {% for n in temp%}
-        
         <tr>
-            <td>{{n[0]}}</td>
-            <td><a href = "{{ url_for('view_specific_model', model_id=n[0])}}">{{n[1]}}</a></td>
-            <td>{{n[2]}}</td>
+            <td>{{n[0]}}:</td>
+            <td>{{n[1]}}</td>
+        </tr>
+        {% endfor %}
+    </table>
+
+    <h1>Reviews</h1>
+
+    <table>
+        <tr>
+            <th>date_written</th>
+            <th>review_id</th>
+            <th>written_review</th>
+            <th>rating</th>
+            <th>username</th>
+            <th>dataset_id</th>
+        </tr>
+        {% for m in revs%}
+        <tr>
+            <td>{{m[0]}}</td>
+            <td>{{m[1]}}</td>
+            <td>{{m[2]}}</td>
+            <td>{{m[3]}}</td>
+            <td>{{m[4]}}</td>
+            <td>{{m[5]}}</td>
         </tr>
         {% endfor %}
         
     </table>
+
+    
 
     
 

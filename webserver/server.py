@@ -16,7 +16,7 @@ from flask import Flask, request, render_template, g, redirect, Response, abort,
 
 tmpl_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'templates')
 app = Flask(__name__, template_folder=tmpl_dir)
-
+app.secret_key = '1234567'
 
 #
 # The following is a dummy URI that does not connect to a valid database. You will need to modify it to connect to your Part 2 database in order to use the data.
@@ -112,9 +112,6 @@ def index():
   # DEBUG: this is debugging code to see what request looks like
   print(request.args)
 
-  session["is_user_logged_in"] = False
-
-
   #
   # example of a database query 
   #
@@ -170,14 +167,44 @@ def index():
   #
   return render_template("index.html", **context)
 
-session = {}
+
+
+
+
 @app.route('/models')
 def view_models():
-  return render_template("models.html")
+
+  cursor = conn.execute(text("SELECT model_id,model_name,num_downloads FROM user_uploads_model_with_citation ORDER BY num_downloads DESC"))
+  conn.commit()
+
+  temp = []
+
+  for row in cursor:
+    temp.append((row[0],row[1],row[2]))
+
+  return render_template("models.html", temp=temp)
+
+
+
+
 
 @app.route('/datasets')
 def view_datasets():
-  return render_template("datasets.html")
+
+  cursor = conn.execute(text("SELECT dataset_id,dataset_name FROM user_uploads_dataset_with_citation"))
+  conn.commit()
+
+  temp = []
+
+  for row in cursor:
+    temp.append((row[0],row[1]))
+
+  return render_template("datasets.html", temp=temp)
+
+
+
+
+
 
 @app.route('/login', methods = ["GET", "POST"])
 def view_login():
@@ -193,24 +220,104 @@ def view_login():
     cursor = conn.execute(query, params)
     conn.commit() 
 
-    print(cursor)
-    print("hello!")
 
     if cursor.rowcount == 0:
       return render_template("login.html", error = "Invalid credentials")
     else:
       session['username']=request.form.get("username")
-      session["is_user_logged_in"] = True
       return redirect("/postlogin")
 
 
   return render_template("login.html")
+
+
+
+
+
 
 @app.route('/postlogin')
 def view_postlogin():
   username = session['username']
   return render_template("postlogin.html", username=username)
 
+
+
+
+
+
+@app.route('/models/<model_id>')
+def view_specific_model(model_id):
+
+  query = text("SELECT * FROM user_uploads_model_with_citation M INNER JOIN citations C ON M.citation_id = C.citation_id WHERE M.model_id = :model_id")
+  params = {'model_id': model_id}
+  cursor = conn.execute(query, params)
+  conn.commit()
+
+  record = cursor.fetchone()
+
+  temp = []
+
+  headings = ['model_id', 'model_name', 'num_parameters', 'num_layers', 'tag1', 'tag2', 'tag3', 'num_downloads', 'username', 'citation_id', 'citation_id', "author1"   ,    "author2"    , "year_published" , "conference"]
+  
+  for i in range(len(record)):
+    if i!=9:
+      temp.append((headings[i], record[i]))
+
+  
+
+  query = text("SELECT * FROM logs_versionhistory WHERE model_id = :model_id")
+  params = {'model_id': model_id}
+  cursor = conn.execute(query, params)
+  conn.commit()
+
+  revs = []
+
+  for i in cursor:
+    revs.append((i))
+
+  context = dict(temp = temp, revs = revs)
+
+  return render_template("view_model_info.html", **context)
+
+
+
+
+
+@app.route('/datasets/<dataset_id>')
+def view_specific_dataset(dataset_id):
+
+  query = text("SELECT * FROM user_uploads_dataset_with_citation M INNER JOIN citations C ON M.citation_id = C.citation_id WHERE M.dataset_id = :dataset_id")
+  params = {'dataset_id': dataset_id}
+  cursor = conn.execute(query, params)
+  conn.commit()
+
+  record = cursor.fetchone()
+
+  temp = []
+
+  headings = ["dataset_id","dataset_name","num_data_points","num_features","description","tag1","tag2","tag3","username","citation_id","citation_id","author1","author2","year_published","conference"]
+  
+  for i in range(len(record)):
+    if i!=9:
+      temp.append((headings[i], record[i]))
+
+  
+  
+  query = text("SELECT * FROM user_reviews_dataset WHERE dataset_id = :dataset_id")
+  params = {'dataset_id': dataset_id}
+  cursor = conn.execute(query, params)
+  conn.commit()
+
+  revs = []
+
+  for i in cursor:
+    revs.append((i))
+
+  context = dict(temp = temp, revs = revs)
+
+  return render_template("view_dataset_info.html", **context)
+
+  
 
 
 
@@ -237,25 +344,25 @@ def view_postlogin():
 # Notice that the function name is another() rather than index()
 # The functions for each app.route need to have different names
 #
-@app.route('/another')
-def another():
-  return render_template("another.html")
+# @app.route('/another')
+# def another():
+#   return render_template("another.html")
 
 
 # Example of adding new data to the database
-@app.route('/add', methods=['POST'])
-def add(): 
-  name = request.form['name']
-  params_dict = {"name":name}
-  g.conn.execute(text('INSERT INTO test(name) VALUES (:name)'), params_dict)
-  g.conn.commit()
-  return redirect('/')
+# @app.route('/add', methods=['POST'])
+# def add(): 
+#   name = request.form['name']
+#   params_dict = {"name":name}
+#   g.conn.execute(text('INSERT INTO test(name) VALUES (:name)'), params_dict)
+#   g.conn.commit()
+#   return redirect('/')
 
 
-@app.route('/login')
-def login():
-    abort(401)
-    this_is_never_executed()
+# @app.route('/login')
+# def login():
+#     abort(401)
+#     this_is_never_executed()
 
 
 if __name__ == "__main__":
