@@ -1,0 +1,38 @@
+<html>
+    <body>
+        <h1>Upload Dataset</h1>
+        <form method="POST" action="/upload_dataset">
+            <label for="dataset_id">Dataset ID:</label>
+            <input type="number" id="dataset_id" name="dataset_id" required>
+
+            <label for="dataset_name">Dataset Name:</label>
+            <input type="text" id="dataset_name" name="dataset_name" required>
+
+            <label for="num_data_points">Number of Data Points:</label>
+            <input type="number" id="num_data_points" name="num_data_points" required>
+
+            <label for="num_features">Number of Features:</label>
+            <input type="number" id="num_features" name="num_features" required>
+
+            <label for="description">Description:</label>
+            <textarea id="description" name="description"></textarea>
+
+            <label for="tag1">Tag 1:</label>
+            <input type="text" id="tag1" name="tag1" required>
+
+            <label for="tag2">Tag 2:</label>
+            <input type="text" id="tag2" name="tag2">
+
+            <label for="tag3">Tag 3:</label>
+            <input type="text" id="tag3" name="tag3">
+
+            <label for="username">Username:</label>
+            <input type="text" id="username" name="username" required>
+
+            <label for="citation_id">Citation ID:</label>
+            <input type="number" id="citation_id" name="citation_id" required>
+
+            <button type="submit">Upload Dataset</button>
+        </form>
+    </body>
+</html>

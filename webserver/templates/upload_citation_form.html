@@ -1,0 +1,23 @@
+<html>
+    <body>
+        <h1>Upload Citation</h1>
+        <form method="POST" action="/upload_citation">
+            <label for="citation_id">Citation ID:</label>
+            <input type="number" id="citation_id" name="citation_id" required>
+
+            <label for="author1">Author 1:</label>
+            <input type="text" id="author1" name="author1" required>
+
+            <label for="author2">Author 2:</label>
+            <input type="text" id="author2" name="author2" required>
+
+            <label for="year_published">Year Published:</label>
+            <input type="date" id="year_published" name="year_published" required>
+
+            <label for="conference">Conference:</label>
+            <input type="text" id="conference" name="conference" required>
+
+            <button type="submit">Upload Citation</button>
+        </form>
+    </body>
+</html>

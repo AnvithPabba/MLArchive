@@ -18,4 +18,17 @@
             </tr>
         {% endfor %}
     </table>
+
+    <br>
+
+    {% if session['username'] %}
+        <a href = "{{ url_for('upload_dataset_page') }}">Upload a Dataset</a>
+    {% endif %}
+
+    <br>
+
+    {% if session['username'] %}
+        <a href="{{ url_for('upload_review_page') }}">Review a Model</a>
+    {% endif %}
+
 {% endblock %}

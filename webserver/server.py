@@ -12,7 +12,7 @@ import os
   # accessible as a variable in index.html:
 from sqlalchemy import *
 from sqlalchemy.pool import NullPool
-from flask import Flask, request, render_template, g, redirect, Response, abort, session
+from flask import Flask, request, render_template, g, redirect, Response, abort, session, url_for
 
 tmpl_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'templates')
 app = Flask(__name__, template_folder=tmpl_dir)
@@ -45,11 +45,11 @@ conn = engine.connect()
 
 # The string needs to be wrapped around text()
 
-conn.execute(text("""CREATE TABLE IF NOT EXISTS test (
-  id serial,
-  name text
-);"""))
-conn.execute(text("""INSERT INTO test(name) VALUES ('grace hopper'), ('alan turing'), ('ada lovelace');"""))
+# conn.execute(text("""CREATE TABLE IF NOT EXISTS test (
+#   id serial,
+#   name text
+# );"""))
+# conn.execute(text("""INSERT INTO test(name) VALUES ('grace hopper'), ('alan turing'), ('ada lovelace');"""))
 
 # To make the queries run, we need to add this commit line
 
@@ -175,7 +175,7 @@ def index():
 @app.route('/logging_out')
 def logging_out():
   session.clear()
-  return render_template("index.html")
+  return redirect("/")
   
 
 
@@ -212,6 +212,20 @@ def view_datasets():
     temp.append((row[0],row[1]))
 
   return render_template("datasets.html", temp=temp)
+
+
+@app.route('/citations')
+def view_citations():
+
+  cursor = conn.execute(text("SELECT * FROM citations"))
+  conn.commit()
+
+  temp = []
+
+  for row in cursor:
+    temp.append(row)
+
+  return render_template("citations.html", temp=temp)
 
 
 
@@ -328,6 +342,171 @@ def view_specific_dataset(dataset_id):
   context = dict(temp = temp, revs = revs)
 
   return render_template("view_dataset_info.html", **context)
+
+@app.route('/upload_model_page')
+def upload_model_page():
+  return render_template("upload_model_form.html")
+
+@app.route('/upload_model', methods = ["POST"])
+def upload_model():
+
+  model_id = request.form.get("model_id")
+  model_name = request.form.get("model_name")
+  num_parameters = request.form.get("num_parameters")
+  num_layers = request.form.get("num_layers")
+  tag1 = request.form.get("tag1")
+  tag2 = request.form.get("tag2")
+  tag3 = request.form.get("tag3")
+  num_downloads = request.form.get("num_downloads")
+  username = request.form.get("username")
+  citation_id = request.form.get("citation_id")
+
+  params_dict = {
+        "model_id": model_id,
+        "model_name": model_name,
+        "num_parameters": num_parameters,
+        "num_layers": num_layers,
+        "tag1": tag1,
+        "tag2": tag2,
+        "tag3": tag3,
+        "num_downloads": num_downloads,
+        "username": username,
+        "citation_id": citation_id
+    }
+
+  query = text("INSERT INTO user_uploads_model_with_citation (model_id, model_name, num_parameters, num_layers, tag1, tag2, tag3, num_downloads, username, citation_ID) VALUES (:model_id, :model_name, :num_parameters, :num_layers, :tag1, :tag2, :tag3, :num_downloads, :username, :citation_id)")
+
+  conn.execute(query, params_dict)
+  conn.commit()
+
+  return redirect('/models')
+
+  
+
+@app.route('/upload_dataset_page')
+def upload_dataset_page():
+    return render_template("upload_dataset_form.html")
+
+@app.route('/upload_dataset', methods=["POST"])
+def upload_dataset():
+    dataset_id = request.form.get("dataset_id")
+    dataset_name = request.form.get("dataset_name")
+    num_data_points = request.form.get("num_data_points")
+    num_features = request.form.get("num_features")
+    description = request.form.get("description")
+    tag1 = request.form.get("tag1")
+    tag2 = request.form.get("tag2")
+    tag3 = request.form.get("tag3")
+    username = request.form.get("username")
+    citation_id = request.form.get("citation_id")
+
+    params_dict = {
+        "dataset_id": dataset_id,
+        "dataset_name": dataset_name,
+        "num_data_points": num_data_points,
+        "num_features": num_features,
+        "description": description,
+        "tag1": tag1,
+        "tag2": tag2,
+        "tag3": tag3,
+        "username": username,
+        "citation_id": citation_id
+    }
+
+    query = text("INSERT INTO user_uploads_dataset_with_citation (dataset_id, dataset_name, num_data_points, num_features, description, tag1, tag2, tag3, username, citation_id) VALUES (:dataset_id, :dataset_name, :num_data_points, :num_features, :description, :tag1, :tag2, :tag3, :username, :citation_id)")
+
+    conn.execute(query, params_dict)
+    conn.commit()
+
+    return redirect('/datasets')
+
+
+
+
+@app.route('/upload_citation_page')
+def upload_citation_page():
+    return render_template("upload_citation_form.html")
+
+@app.route('/upload_citation', methods=["POST"])
+def upload_citation():
+    citation_id = request.form.get("citation_id")
+    author1 = request.form.get("author1")
+    author2 = request.form.get("author2")
+    year_published = request.form.get("year_published")
+    conference = request.form.get("conference")
+
+    params_dict = {
+        "citation_id": citation_id,
+        "author1": author1,
+        "author2": author2,
+        "year_published": year_published,
+        "conference": conference
+    }
+
+    query = text("INSERT INTO citations (citation_id, author1, author2, year_published, conference) VALUES (:citation_id, :author1, :author2, :year_published, :conference)")
+
+    conn.execute(query, params_dict)
+    conn.commit()
+
+    return redirect('/citations')
+
+@app.route('/upload_review_page')
+def upload_review_page():
+    return render_template("upload_review_form.html")
+
+@app.route('/upload_dataset_review', methods=["POST"])
+def upload_dataset_review():
+    review_id = request.form.get("review_id")
+    date_written = request.form.get("date_written")
+    written_review = request.form.get("written_review")
+    rating = request.form.get("rating")
+    username = request.form.get("username")
+    dataset_id = request.form.get("dataset_id")
+
+    params_dict = {
+        "review_id": review_id,
+        "date_written": date_written,
+        "written_review": written_review,
+        "rating": rating,
+        "username": username,
+        "dataset_id": dataset_id
+    }
+
+    query = text("INSERT INTO user_reviews_dataset (date_written, Review_ID, written_review, rating, Username, Dataset_ID) VALUES (:date_written, :review_id, :written_review, :rating, :username, :dataset_id)")
+
+    conn.execute(query, params_dict)
+    conn.commit()
+
+    return redirect(url_for('view_specific_dataset', dataset_id = dataset_id))
+
+  
+
+
+@app.route('/upload_version_for_model/<model_id>')
+def upload_version_for_model(model_id):
+
+    return render_template("upload_model_version_form.html", model_id = model_id)
+
+@app.route('/upload_version_history/<model_id>', methods=["POST"])
+def upload_version_history(model_id):
+    time_stamp = request.form.get("time_stamp")
+    version = request.form.get("version")
+
+
+    params_dict = {
+        "model_id": model_id,
+        "time_stamp": time_stamp,
+        "version": version
+    }
+
+    query = text("INSERT INTO logs_versionhistory (model_id, time_stamp, version) VALUES (:model_id, :time_stamp, :version)")
+
+    conn.execute(query, params_dict)
+    conn.commit()
+
+    return redirect(url_for('view_specific_model', model_id = model_id))
+
+
 
   
 

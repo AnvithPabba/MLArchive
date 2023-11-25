@@ -20,4 +20,9 @@
             </tr>
         {% endfor %}
     </table>
+
+    {% if session['username'] %}
+        <a href="{{ url_for('upload_model_page') }}">Upload a Model</a>
+    {% endif %}
+
 {% endblock %}

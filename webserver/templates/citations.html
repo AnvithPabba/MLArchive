@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+
+{% block title %}Citations{% endblock %}
+
+{% block content %}
+    <h1>Citations</h1>
+
+    <table>
+        <tr>
+            <th>Citation ID</th>
+            <th>Author 1</th>
+            <th>Author 2</th>
+            <th>Year Published</th>
+            <th>Conference</th>
+        </tr>
+        {% for n in temp %}
+            <tr>
+                <td>{{ n[0] }}</td>
+                <td>{{ n[1] }}</td>
+                <td>{{ n[2] }}</td>
+                <td>{{ n[3] }}</td>
+                <td>{{ n[4] }}</td>
+            </tr>
+        {% endfor %}
+    </table>
+
+    
+
+    {% if session['username'] %}
+        <a href="{{ url_for('upload_citation_page') }}">Upload a Citation</a>
+    {% endif %}
+
+{% endblock %}

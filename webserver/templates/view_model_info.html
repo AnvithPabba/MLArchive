@@ -31,4 +31,9 @@
             </tr>
         {% endfor %}
     </table>
+
+    {% if session['username']%}
+        <a href="{{ url_for('upload_version_for_model', model_id=temp[0][1]) }}">Log Model History</a>
+    {% endif %}
+
 {% endblock %}
