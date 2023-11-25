@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+
+{% block title %}Training History{% endblock %}
+
+{% block content %}
+
+    <html>
+        <body>
+            <table>
+                <tr>
+                    <th>Model ID</th>
+                    <th>Dataset ID</th>
+                    <th>Cluster ID</th>
+                    <th>Time</th>
+                </tr>
+                {%for n in list_of_train%}
+                <tr>
+
+                    <td>{{ n[0] }}</td>
+                    <td>{{ n[1] }}</td>
+                    <td>{{ n[3] }}</td>
+                    <td>{{ n[4] }}</td>
+
+                </tr>
+                {% endfor %}
+            </table>
+        </body>
+    </html>
+
+{% endblock %}

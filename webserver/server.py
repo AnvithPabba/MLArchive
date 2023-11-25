@@ -264,7 +264,87 @@ def view_login():
 @app.route('/postlogin')
 def view_postlogin():
   username = session['username']
-  return render_template("postlogin.html", username=username)
+
+  params = {"username": username}
+
+  query = text("SELECT * FROM free_tier WHERE username = :username")
+  cursor = conn.execute(query, params)
+  conn.commit()
+
+  temp = cursor.fetchone()
+
+  if temp:
+    session['tier'] = "free_tier"
+  else:
+    session['tier'] = "premium_tier"
+
+  userinputs = [username, session['tier']]
+
+
+
+  return render_template("postlogin.html", userinputs=userinputs)
+
+
+
+@app.route('/train_a_model_with_dataset')
+def train_a_model_with_dataset():
+  return render_template('form_to_train_a_model.html')
+
+@app.route('/upload_train_a_model', methods = ["POST"])
+def upload_train_a_model():
+
+  model_id = request.form.get("model_id")
+  dataset_id = request.form.get("dataset_id")
+  username = request.form.get("username")
+  cluster_id = request.form.get("cluster_id")
+  since = request.form.get("since")
+
+  params_dict = {
+    "model_id": model_id,
+    "dataset_id": dataset_id,
+    "username": username,
+    "cluster_id": cluster_id,
+    "since": since
+  }
+
+  params_dict2 = {
+    "model_id": model_id,
+    "dataset_id": dataset_id,
+    "username": username
+  }
+
+  query = text("INSERT INTO train (model_id, dataset_id, username) VALUES (:model_id, :dataset_id, :username)")
+
+  conn.execute(query,params_dict2)
+  conn.commit()
+
+  query = text("INSERT INTO trained_on (model_id, dataset_id, username, cluster_id, since) VALUES (:model_id, :dataset_id, :username, :cluster_id, :since)")
+
+  conn.execute(query,params_dict)
+  conn.commit()
+  
+
+  return redirect('/postlogin')
+
+
+
+@app.route("/train_history/<username>")
+def train_history(username):
+
+  query = text("SELECT * FROM trained_on WHERE username = :username")
+
+  params = {"username": username}
+
+  cursor = conn.execute(query,params)
+  conn.commit()
+
+  list_of_train = []
+
+  for row in cursor:
+    list_of_train.append(row)
+
+  return render_template("view_train_history.html", list_of_train = list_of_train)
+
 
 
 
@@ -360,6 +440,8 @@ def upload_model():
   num_downloads = request.form.get("num_downloads")
   username = request.form.get("username")
   citation_id = request.form.get("citation_id")
+  dataset_id = request.form.get("dataset_id")
+
 
   params_dict = {
         "model_id": model_id,
@@ -374,10 +456,21 @@ def upload_model():
         "citation_id": citation_id
     }
 
+  params_dict2 = {
+    "dataset_id": dataset_id,
+    "model_id": model_id
+  }
+
   query = text("INSERT INTO user_uploads_model_with_citation (model_id, model_name, num_parameters, num_layers, tag1, tag2, tag3, num_downloads, username, citation_ID) VALUES (:model_id, :model_name, :num_parameters, :num_layers, :tag1, :tag2, :tag3, :num_downloads, :username, :citation_id)")
 
   conn.execute(query, params_dict)
   conn.commit()
+
+  query = text("INSERT INTO pretrained_on (dataset_id, model_id) VALUES (:dataset_id, :model_id)")
+
+  conn.execute(query, params_dict2)
+  conn.commit()
+
 
   return redirect('/models')
 
@@ -505,6 +598,34 @@ def upload_version_history(model_id):
     conn.commit()
 
     return redirect(url_for('view_specific_model', model_id = model_id))
+
+@app.route('/delete_model/<model_id>', methods = ["POST"])
+def delete_model(model_id):
+
+  query = text("DELETE FROM pretrained_on WHERE model_id = :model_id")
+  params_dict = {"model_id": model_id}
+
+  conn.execute(query, params_dict)
+  conn.commit()
+
+  query = text("DELETE FROM user_uploads_model_with_citation WHERE model_id = :model_id")
+  params_dict = {"model_id": model_id}
+
+  conn.execute(query, params_dict)
+  conn.commit()
+
+  return redirect('/models')
+
+@app.route('/delete_dataset/<dataset_id>', methods = ["POST"])
+def delete_dataset(dataset_id):
+
+  query = text("DELETE FROM user_uploads_dataset_with_citation WHERE dataset_id = :dataset_id")
+  params_dict = {"dataset_id": dataset_id}
+
+  conn.execute(query, params_dict)
+  conn.commit()
+
+  return redirect('/datasets')
 
 
 

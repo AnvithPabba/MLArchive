@@ -18,9 +18,26 @@
     <a href="{{ url_for('logging_out')}}">Sign out</a>
 
   </header>
-  <h1>Welcome {{username}}</h1>
+  <h1>Welcome {{ userinputs[0] }}</h1>
+  <h3>You are successfully logged in!</h3>
 
   <img src="https://th.bing.com/th/id/R.ef5dd740f43b2c077260b3973c8e5571?rik=sKtUcgRj4YVUnw&pid=ImgRaw&r=0" alt="test image" height="200px" width="300px">
+
+  {% if userinputs[1] == 'free_tier'%}
+
+  <h1>You are a free tier member</h1>
+
+  {% else %}
+
+  <h1> Congrats, you are a premium user, would you like to train a model?</h1>
+
+  <a href="{{ url_for('train_a_model_with_dataset') }}">Train a Model</a>
+  <br>
+
+  <a href="{{ url_for('train_history', username = userinputs[0]) }}">View training history</a>
+
+
+  {% endif %}
 
   <!-- <div>{{data}}</div> -->
 

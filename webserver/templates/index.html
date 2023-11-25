@@ -23,9 +23,16 @@
     </form>
     -->
     {% if session['username'] %}
+        <h1>You are Logged in!</h1>
         
     {% else %}
-        <h1>Please Log In</h1>
+        <h1>Please Log In for full functionality</h1>
+        <h3>Sample Premium tier user username password:</h3>
+        <h4>username: AnvithP</h4>
+        <h4>password: APsPassword</h4>
+        <h3>Sample Free tier username password:</h3>
+        <h4>username: Nav</h4>
+        <h4>password: Travis</h4>
     {% endif %}
 
 {% endblock %}

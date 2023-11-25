@@ -6,6 +6,14 @@
 {% block content %}
     <h1>Models</h1>
 
+    <!-- <form method="POST" action= "{{ url_for('upload_version_history', model_id = model_id) }}">
+
+        <label for="search">Time Stamp:</label>
+        <input type="datetime-local" id="time_stamp" name="time_stamp" required>
+
+        <button type="submit">Upload Model Version</button>
+    </form> -->
+
     <table>
         <tr>
             <th>Model ID</th>
@@ -17,6 +25,11 @@
                 <td>{{ n[0] }}</td>
                 <td><a href="{{ url_for('view_specific_model', model_id=n[0]) }}">{{ n[1] }}</a></td>
                 <td>{{ n[2] }}</td>
+                <td>
+                    <form method="POST" action="{{ url_for('delete_model', model_id=n[0]) }}">
+                        <button type="submit">Delete Model</button>
+                    </form>
+                </td>
             </tr>
         {% endfor %}
     </table>

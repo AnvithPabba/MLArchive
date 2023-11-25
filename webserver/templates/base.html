@@ -14,11 +14,14 @@
 </head>
 <body>
     <header>
+
         <a href="{{ url_for('view_models') }}">Models</a>
         <a href="{{ url_for('view_datasets') }}">Datasets</a>
         <a href="{{ url_for('view_citations') }}">Citations</a>
 
+
         {% if session['username'] %}
+            <a href="{{ url_for('view_postlogin') }}">Homepage</a>
             <a href="{{ url_for('logging_out') }}">Sign Out</a>
         {% else %}
             <a href="{{ url_for('view_login') }}">Log in</a>

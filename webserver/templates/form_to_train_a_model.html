@@ -1,0 +1,24 @@
+<html>
+    <body>
+        <form method = 'POST' action="/upload_train_a_model">
+
+            <label for="model_id">Model ID of the model you want to train</label>
+            <input type="text" id="model_id" name="model_id" required>
+
+            <label for="dataset_id">Dataset ID of the dataset the model will train on</label>
+            <input type="text" id="dataset_id" name="dataset_id" required>
+
+            <label for="username">Your username</label>
+            <input type="text" id="username" name="username" required>
+
+            <label for="cluster_id">ID of the cluster used - string of less then 7 characters - default = USA45g</label>
+            <input type="text" id="cluster_id" name="cluster_id" required>
+
+            <label for="since">Date and Time Stamp</label>
+            <input type="datetime-local" id="since" name="since" required>
+
+            <button type="submit">Train model</button>
+
+        </form>
+    </body>
+</html>
