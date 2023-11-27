@@ -291,9 +291,31 @@ def view_postlogin():
 
   userinputs = [username, session['tier']]
 
+  query = text("SELECT model_id,model_name,num_downloads FROM user_uploads_model_with_citation ORDER BY num_downloads DESC")
+  
+  cursor = conn.execute(query)
+  conn.commit()
+
+  trending_model = []
+
+  for i in range(5):
+
+    trending_model.append(cursor.fetchone())
+
+  query = text("SELECT d.dataset_id, d.dataset_name, AVG(rating) FROM user_reviews_dataset u INNER JOIN user_uploads_dataset_with_citation d ON u.dataset_id = d.dataset_id GROUP BY d.dataset_id ORDER BY AVG(rating) DESC")
+
+  cursor = conn.execute(query)
+  conn.commit()
+
+  trending_datasets = []
+
+  for i in range(5):
+
+    trending_datasets.append(cursor.fetchone())  
 
 
-  return render_template("postlogin.html", userinputs=userinputs)
+
+  return render_template("postlogin.html", userinputs=userinputs, trending_model=trending_model, trending_datasets = trending_datasets)
 
 
 

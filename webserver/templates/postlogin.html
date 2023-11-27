@@ -59,6 +59,50 @@
     {% endfor %}
   </div> -->
 
+  <h1>Trending Models and Datasets</h1>
+
+  <h2>Trending Models</h2>
+
+  <table>
+    <tr>
+      <th> Model ID</th>
+      <th> Model Name</th>
+      <th> Number of Downloads</th>
+    </tr>
+    {% for i in trending_model %}
+
+      <tr>
+        <td>{{ i[0] }}</td>
+        <td>{{ i[1] }}</td>
+        <td>{{ i[2] }}</td>
+      </tr>
+
+    {% endfor %}
+  </table>
+
+  <h2>Trending Datasets</h2>
+
+  <table>
+    <tr>
+      <th> Dataset ID</th>
+      <th> Dataset Name</th>
+      <th> Average Rating</th>
+    </tr>
+    {% for i in trending_datasets %}
+
+      <tr>
+        <td>{{ i[0] }}</td>
+        <td>{{ i[1] }}</td>
+        <td>{{ i[2] }}</td>
+      </tr>
+
+    {% endfor %}
+  </table>
+
+
+
+
+
 </body>
 
 
