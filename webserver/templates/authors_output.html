@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+
+{% block title %}Models{% endblock %}
+
+{% block content %}
+    <h1>Relevant Authors</h1>
+
+    <table>
+        <tr>
+            <th>Author 1</th>
+            <th>Author 2</th>
+        </tr>
+        {% for n in authors %}
+            <tr>
+                <td>{{ n[0] }}</td>
+                <td>{{ n[1] }}</td>
+            </tr>
+        {% endfor %}
+    </table>
+
+{% endblock %}

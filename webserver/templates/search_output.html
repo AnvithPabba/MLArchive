@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+
+{% block title %}Models{% endblock %}
+
+{% block content %}
+    <h1>Relevant Models</h1>
+
+    <table>
+        <tr>
+            <th>Model ID</th>
+            <th>Model Name</th>
+        </tr>
+        {% for n in models %}
+            <tr>
+                <td>{{ n[0] }}</td>
+                <td>{{ n[1] }}</td>
+            </tr>
+        {% endfor %}
+    </table>
+
+    <h1>Relevant Datasets</h1>
+
+    <table>
+        <tr>
+            <th>Dataset ID</th>
+            <th>Dataset Name</th>
+        </tr>
+        {% for m in datasets %}
+            <tr>
+                <td>{{ m[0] }}</td>
+                <td>{{ m[1] }}</td>
+            </tr>
+        {% endfor %}
+    </table>
+
+
+
+{% endblock %}

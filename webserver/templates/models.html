@@ -30,6 +30,11 @@
                         <button type="submit">Delete Model</button>
                     </form>
                 </td>
+                <td>
+                    <form method="POST" action="{{ url_for('download_model', model_id=n[0]) }}">
+                        <button type="submit">Download Model</button>
+                    </form>
+                </td>
             </tr>
         {% endfor %}
     </table>

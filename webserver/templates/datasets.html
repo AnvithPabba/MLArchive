@@ -20,6 +20,11 @@
                         <button type="submit">Delete Dataset</button>
                     </form>
                 </td>
+                <td>
+                    <form method="POST" action="{{ url_for('download_dataset', dataset_id=n[0]) }}">
+                        <button type="submit">Download Dataset</button>
+                    </form>
+                </td>
             </tr>
         {% endfor %}
     </table>

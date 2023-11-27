@@ -275,6 +275,17 @@ def view_postlogin():
 
   if temp:
     session['tier'] = "free_tier"
+
+    query = text("SELECT * FROM free_tier WHERE username = :username")
+    params = {"username": session["username"]}
+
+    cursor = conn.execute(query,params)
+    conn.commit()
+
+    _,num_downloads = cursor.fetchone()
+
+    session["num_downloads_left"] = num_downloads
+
   else:
     session['tier'] = "premium_tier"
 
@@ -599,6 +610,12 @@ def upload_version_history(model_id):
 
     return redirect(url_for('view_specific_model', model_id = model_id))
 
+
+
+
+
+
+
 @app.route('/delete_model/<model_id>', methods = ["POST"])
 def delete_model(model_id):
 
@@ -626,6 +643,234 @@ def delete_dataset(dataset_id):
   conn.commit()
 
   return redirect('/datasets')
+
+
+
+
+
+@app.route('/create_new_free_tier')
+def create_new_free_tier():
+  return render_template('form_for_new_free_tier.html')
+
+@app.route('/upload_free_tier', methods = ["POST"])
+def upload_free_tier():
+
+  username = request.form.get("username")
+  password = request.form.get("password")
+  email = request.form.get("email")
+  num_downloads_left = request.form.get("num_downloads_left")
+
+  params_dict = {
+    "username": username,
+    "password": password,
+    "email": email,
+  }
+
+  params_dict2 = {
+    "username": username,
+    "num_downloads_left": num_downloads_left,
+  }
+
+  query = text("INSERT INTO customer (username, password, email) VALUES (:username, :password, :email)")
+
+  conn.execute(query,params_dict)
+  conn.commit()
+
+  query = text("INSERT INTO free_tier (username, num_downloads_left) VALUES (:username, :num_downloads_left)")
+
+  conn.execute(query,params_dict2)
+  conn.commit()
+  
+
+  return redirect('/login')
+
+
+
+@app.route('/create_new_premium_tier')
+def create_new_premium_tier():
+  return render_template('form_for_new_premium_tier.html')
+
+@app.route('/upload_premium_tier', methods = ["POST"])
+def upload_premium_tier():
+
+  username = request.form.get("username")
+  password = request.form.get("password")
+  email = request.form.get("email")
+  premium_compute_time_in_hours = request.form.get("premium_compute_time_in_hours")
+  start_date = request.form.get("start_date")
+  end_date = request.form.get("end_date")
+
+  params_dict = {
+    "username": username,
+    "password": password,
+    "email": email,
+  }
+
+  params_dict2 = {
+    "username": username,
+    "premium_compute_time_in_hours": premium_compute_time_in_hours,
+    "start_date": start_date,
+    "end_date": end_date
+  }
+
+  query = text("INSERT INTO customer (username, password, email) VALUES (:username, :password, :email)")
+
+  conn.execute(query,params_dict)
+  conn.commit()
+
+  query = text("INSERT INTO premium_tier (username, premium_compute_time_in_hours, start_date, end_date) VALUES (:username, :premium_compute_time_in_hours, :start_date, :end_date)")
+
+  conn.execute(query,params_dict2)
+  conn.commit()
+  
+
+  return redirect('/login')
+
+
+@app.route('/delete_a_user/<username>')
+def delete_a_user(username):
+
+  query = text("DELETE FROM customer WHERE username = :username")
+  params_dict = {"username": username}
+
+  conn.execute(query,params_dict)
+  conn.commit()
+
+  if session["username"] == username:
+    session["username"] = None
+
+  return redirect('/login')
+
+
+@app.route('/download_model/<model_id>', methods = ["POST"])
+def download_model(model_id):
+
+  query = text("SELECT * FROM free_tier WHERE username = :username")
+  params = {"username": session["username"]}
+
+  cursor = conn.execute(query,params)
+  conn.commit()
+
+  _,num_downloads = cursor.fetchone()
+
+  if num_downloads>0:
+
+    query = text("UPDATE free_tier SET num_downloads_left = :num_downloads_left WHERE username = :username")
+    params = {"username": session["username"], "num_downloads_left": num_downloads-1}
+
+    conn.execute(query,params)
+    conn.commit()
+
+    session["num_downloads_left"] -= 1
+
+    query = text("INSERT INTO download_model (model_id, username) VALUES (:model_id, :username)")
+    params = {"model_id": model_id, "username": session["username"]}
+
+    conn.execute(query, params)
+    conn.commit()
+
+    return redirect('/models')
+
+  else:
+    return render_template("no_downloads_left.html")
+
+  
+
+@app.route('/download_dataset/<dataset_id>', methods = ["POST"])
+def download_dataset(dataset_id):
+
+  query = text("SELECT * FROM free_tier WHERE username = :username")
+  params = {"username": session["username"]}
+
+  cursor = conn.execute(query,params)
+  conn.commit()
+
+  _,num_downloads = cursor.fetchone()
+
+  if num_downloads>0:
+
+    query = text("UPDATE free_tier SET num_downloads_left = :num_downloads_left WHERE username = :username")
+    params = {"username": session["username"], "num_downloads_left": num_downloads-1}
+
+    conn.execute(query,params)
+    conn.commit()
+
+    session["num_downloads_left"] -= 1
+
+    query = text("INSERT INTO download_dataset (dataset_id, username) VALUES (:dataset_id, :username)")
+    params = {"dataset_id": dataset_id, "username": session["username"]}
+
+    conn.execute(query, params)
+    conn.commit()
+
+    return redirect('/datasets')
+
+  else:
+    return render_template("no_downloads_left.html")
+
+
+
+@app.route('/search_models_datasets', methods = ['POST'])
+def search_models_datasets():
+
+  search = request.form.get('search')
+
+  search2 = f"%{search}%"
+
+  params = {"search": search2}
+
+  models = []
+  datasets = []
+
+  query = text("SELECT * FROM user_uploads_model_with_citation WHERE model_name ILIKE :search OR tag1 ILIKE :search OR tag2 ILIKE :search OR tag3 ILIKE :search")
+
+  cursor = conn.execute(query,params)
+  conn.commit()
+
+  for i in cursor:
+    models.append(i)
+
+  query = text("SELECT * FROM user_uploads_dataset_with_citation WHERE dataset_name ILIKE :search OR description ILIKE :search OR tag1 ILIKE :search OR tag2 ILIKE :search OR tag3 ILIKE :search")
+
+  cursor = conn.execute(query,params)
+  conn.commit()
+
+  for i in cursor:
+    datasets.append(i)
+
+  return render_template("search_output.html", models = models, datasets = datasets)
+
+
+@app.route('/search_authors', methods = ['POST'])
+def search_authors():
+
+  search = request.form.get('search')
+
+  date = request.form.get('date')
+
+  search2 = f"%{search}%"
+  date2 = f"%{date}%"
+
+  params = {"search": search2, "date":date2}
+
+  authors = []
+
+  query = text("select c.author1, c.author2 from citations c, user_uploads_model_with_citation u where c.citation_id = u.citation_id and c.year_published >= :date intersect select c.author1, c.author2 from citations c, user_uploads_model_with_citation u where c.citation_id = u.citation_id and (model_name ilike :search or tag1 ilike :search or tag2 ilike :search or tag3 ilike :search) ")
+
+  cursor = conn.execute(query,params)
+  conn.commit()
+
+  for i in cursor:
+    authors.append(i)
+
+  return render_template("authors_output.html", authors = authors)
+
+
+
+
+
+
+
 
 
 

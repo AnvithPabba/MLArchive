@@ -15,7 +15,9 @@
 
     <a href="{{ url_for('view_models') }}">Models</a>
     <a href="{{ url_for('view_datasets') }}">Datasets</a>
+    <a href="{{ url_for('view_citations') }}">Citations</a>
     <a href="{{ url_for('logging_out')}}">Sign out</a>
+    <a href="{{ url_for('delete_a_user', username = userinputs[0]) }}">Delete your account</a>
 
   </header>
   <h1>Welcome {{ userinputs[0] }}</h1>
@@ -26,6 +28,7 @@
   {% if userinputs[1] == 'free_tier'%}
 
   <h1>You are a free tier member</h1>
+  <h2>You have {{ session["num_downloads_left"] }} free downloads left.</h2>
 
   {% else %}
 
@@ -38,6 +41,15 @@
 
 
   {% endif %}
+
+  <br>
+
+  <h1>Search below for relevant models and datasets:</h1>
+
+  <form method="POST" action="{{ url_for('search_models_datasets') }}">
+    <input type="text" id = 'search' name = 'search'>
+    <input type="submit", value="Submit">
+  </form>
 
   <!-- <div>{{data}}</div> -->
 

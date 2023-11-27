@@ -30,4 +30,16 @@
         <a href="{{ url_for('upload_citation_page') }}">Upload a Citation</a>
     {% endif %}
 
+    <h1>Search for authors in a specific field from a certain date onwards</h1>
+
+    <form method="POST" action="{{ url_for('search_authors') }}">
+        <label for="search">Authors famous for</label>
+        <input type="text" id = 'search' name = 'search'>
+        <label for="date">From this year onwards</label>
+        <input type="date" id = 'date' name = 'date'>
+        <input type="submit", value="Submit">
+    </form>
+
+
+
 {% endblock %}
