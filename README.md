@@ -57,22 +57,8 @@ We were able to implement everything as part of out Part 1 and Part 2 design pla
 
 We used ChatGPT to reproduce comparable HTML files since several webpages adhered to a common template, with only slight variations in the naming. For instance, upload_dataset_form.html and upload_model_form.html share a similar structure, differing primarily in the text content. The following are the queries we used - 
 
-example of the query used: create something similar for CREATE TABLE User_Uploads_Dataset_With_Citation(
-    Dataset_ID int primary key,
-    Dataset_name varchar(50) UNIQUE,
-    Num_data_points int,
-    Num_features int,
-    Description varchar(200),
-    tag1 varchar(50) NOT NULL,
-    tag2 varchar(50),
-    tag3 varchar(50),
-    Username varchar(20) NOT NULL REFERENCES Customer,
-    Citation_ID int NOT NULL REFERENCES Citations,
-    CHECK (Num_data_points > 0),
-    CHECK (Num_features > 0)
-);
+example of the query used: 
 
-ChatGPT response - 
 <!-- HTML CODE -->
 
 &lt;html&gt;
@@ -114,5 +100,20 @@ ChatGPT response -
         </form>;
     </body>;
 &lt;/html&gt;
+
+create something similar for CREATE TABLE User_Uploads_Dataset_With_Citation(
+    Dataset_ID int primary key,
+    Dataset_name varchar(50) UNIQUE,
+    Num_data_points int,
+    Num_features int,
+    Description varchar(200),
+    tag1 varchar(50) NOT NULL,
+    tag2 varchar(50),
+    tag3 varchar(50),
+    Username varchar(20) NOT NULL REFERENCES Customer,
+    Citation_ID int NOT NULL REFERENCES Citations,
+    CHECK (Num_data_points > 0),
+    CHECK (Num_features > 0)
+);
 
 <br/>
