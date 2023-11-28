@@ -75,7 +75,7 @@ example of the query used: create something similar for CREATE TABLE User_Upload
 ChatGPT response - 
 <!-- HTML CODE -->
 
-<html>;
+&lt;html&gt;
 
     <body>;
     
@@ -113,6 +113,6 @@ ChatGPT response -
             <button type="submit">;Upload Model</button>;
         </form>;
     </body>;
-</html>;
+&lt;/html&gt;
 
 <br/>
