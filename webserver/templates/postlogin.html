@@ -99,6 +99,56 @@
     {% endfor %}
   </table>
 
+  <br>
+
+  <h1>Relevant models based on your past history</h1>
+
+  {% if tags!=[] %}
+
+  <h2>Tags - {{ tags[0] }}, {{ tags[1] }}, {{ tags[2] }}</h2>
+
+  {% endif %}
+
+
+  <table>
+    <tr>
+      <th> Model ID</th>
+      <th> Model Name</th>
+    </tr>
+    {% for i in user_recommended_models %}
+
+      <tr>
+        <td>{{ i[0] }}</td>
+        <td>{{ i[1] }}</td>
+      </tr>
+
+    {% endfor %}
+  </table>
+
+  <h1>Relevant Datasets based on your past history</h1>
+
+  {% if tags!=[] %}
+
+  <h2>Tags - {{ tags[3] }}, {{ tags[4] }}, {{ tags[5] }}</h2>
+
+  {% endif %}
+
+  <table>
+    <tr>
+      <th> Dataset ID</th>
+      <th> Dataset Name</th>
+    </tr>
+    {% for i in user_recommended_datasets %}
+
+      <tr>
+        <td>{{ i[0] }}</td>
+        <td>{{ i[1] }}</td>
+      </tr>
+
+    {% endfor %}
+  </table>
+
+
 
 
 

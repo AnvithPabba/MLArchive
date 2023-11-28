@@ -15,6 +15,7 @@
             <tr>
                 <td>{{ n[0] }}</td>
                 <td><a href="{{ url_for('view_specific_dataset', dataset_id=n[0]) }}">{{ n[1] }}</a></td>
+                {% if session['username'] %}
                 <td>
                     <form method="POST" action="{{ url_for('delete_dataset', dataset_id=n[0]) }}">
                         <button type="submit">Delete Dataset</button>
@@ -25,6 +26,7 @@
                         <button type="submit">Download Dataset</button>
                     </form>
                 </td>
+                {% endif %}
             </tr>
         {% endfor %}
     </table>
@@ -38,7 +40,7 @@
     <br>
 
     {% if session['username'] %}
-        <a href="{{ url_for('upload_review_page') }}">Review a Model</a>
+        <a href="{{ url_for('upload_review_page') }}">Review a Dataset</a>
     {% endif %}
 
 {% endblock %}

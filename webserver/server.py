@@ -9,6 +9,7 @@ A debugger such as "pdb" may be helpful for debugging.
 Read about it online.
 """
 import os
+from datetime import datetime
   # accessible as a variable in index.html:
 from sqlalchemy import *
 from sqlalchemy.pool import NullPool
@@ -162,6 +163,42 @@ def index():
   #
   # context = dict(data = names)
 
+  session['latest_model_interacted'] = None
+  session['latest_dataset_interacted'] = None
+  
+
+  query = text("SELECT model_id,model_name,num_downloads FROM user_uploads_model_with_citation ORDER BY num_downloads DESC")
+  
+  try:
+    cursor = conn.execute(query)
+    conn.commit()
+  except:
+    conn.rollback()
+    return render_template('error.html')
+
+  trending_model = []
+
+  for i in range(5):
+
+    trending_model.append(cursor.fetchone())
+
+  
+
+  query = text("SELECT d.dataset_id, d.dataset_name, AVG(rating) FROM user_reviews_dataset u INNER JOIN user_uploads_dataset_with_citation d ON u.dataset_id = d.dataset_id GROUP BY d.dataset_id ORDER BY AVG(rating) DESC")
+
+  try:
+    cursor = conn.execute(query)
+    conn.commit()
+  except:
+    conn.rollback()
+    return render_template('error.html')
+
+  trending_datasets = []
+
+  for i in range(5):
+
+    trending_datasets.append(cursor.fetchone())
+
 
   
 
@@ -170,7 +207,7 @@ def index():
   # render_template looks in the templates/ folder for files.
   # for example, the below file reads template/index.html
   #
-  return render_template("index.html")#, **context)
+  return render_template("index.html", trending_model = trending_model, trending_datasets = trending_datasets)#, **context)
 
 @app.route('/logging_out')
 def logging_out():
@@ -243,9 +280,12 @@ def view_login():
     password = request.form.get("password")
     params = {'username':username, 'password':password}
     query = text("SELECT username,password FROM customer WHERE username = :username and password = :password")
-    cursor = conn.execute(query, params)
-    conn.commit() 
-
+    try:
+      cursor = conn.execute(query, params)
+      conn.commit() 
+    except:
+      conn.rollback()
+      return render_template('error.html')
 
     if cursor.rowcount == 0:
       return render_template("login.html", error = "Invalid credentials")
@@ -268,8 +308,12 @@ def view_postlogin():
   params = {"username": username}
 
   query = text("SELECT * FROM free_tier WHERE username = :username")
-  cursor = conn.execute(query, params)
-  conn.commit()
+  try:
+    cursor = conn.execute(query, params)
+    conn.commit()
+  except:
+    conn.rollback()
+    return render_template('error.html')
 
   temp = cursor.fetchone()
 
@@ -279,8 +323,12 @@ def view_postlogin():
     query = text("SELECT * FROM free_tier WHERE username = :username")
     params = {"username": session["username"]}
 
-    cursor = conn.execute(query,params)
-    conn.commit()
+    try:
+      cursor = conn.execute(query,params)
+      conn.commit()
+    except:
+      conn.rollback()
+      return render_template('error.html')
 
     _,num_downloads = cursor.fetchone()
 
@@ -293,8 +341,12 @@ def view_postlogin():
 
   query = text("SELECT model_id,model_name,num_downloads FROM user_uploads_model_with_citation ORDER BY num_downloads DESC")
   
-  cursor = conn.execute(query)
-  conn.commit()
+  try:
+    cursor = conn.execute(query)
+    conn.commit()
+  except:
+    conn.rollback()
+    return render_template('error.html')
 
   trending_model = []
 
@@ -304,8 +356,12 @@ def view_postlogin():
 
   query = text("SELECT d.dataset_id, d.dataset_name, AVG(rating) FROM user_reviews_dataset u INNER JOIN user_uploads_dataset_with_citation d ON u.dataset_id = d.dataset_id GROUP BY d.dataset_id ORDER BY AVG(rating) DESC")
 
-  cursor = conn.execute(query)
-  conn.commit()
+  try:
+    cursor = conn.execute(query)
+    conn.commit()
+  except:
+    conn.rollback()
+    return render_template('error.html')
 
   trending_datasets = []
 
@@ -313,9 +369,89 @@ def view_postlogin():
 
     trending_datasets.append(cursor.fetchone())  
 
+  user_recommended_models = []
+  user_recommended_datasets = []
+  tags = []
+
+  if session['latest_model_interacted'] == None or session['latest_dataset_interacted'] == None:
+
+    return render_template("postlogin.html", userinputs=userinputs, trending_model=trending_model, trending_datasets = trending_datasets, user_recommended_models = trending_model, user_recommended_datasets = trending_datasets, tags = tags)
+    
+
+  if session['latest_model_interacted'] != None:
+
+    query = text("SELECT tag1, tag2, tag3 FROM user_uploads_model_with_citation WHERE model_id = :model_id")
+
+    params = {"model_id": session['latest_model_interacted']}
+
+    cursor = conn.execute(query, params)
+    conn.commit()
+
+    for i in cursor.fetchone():
+      if i != None:
+        tags.append(i)
+
+  if session['latest_dataset_interacted'] != None:
+
+    query = text("SELECT tag1, tag2, tag3 FROM user_uploads_dataset_with_citation WHERE dataset_id = :dataset_id")
+
+    params = {"dataset_id": session['latest_dataset_interacted']}
+
+    cursor = conn.execute(query, params)
+    conn.commit()
+
+    for i in cursor.fetchone():
+      if i != None:
+        tags.append(i)
 
 
-  return render_template("postlogin.html", userinputs=userinputs, trending_model=trending_model, trending_datasets = trending_datasets)
+
+  search1 = f"%{tags[0]}%"
+  search2 = f"%{tags[1]}%"
+  search3 = f"%{tags[2]}%"
+  search4 = f"%{tags[3]}%"
+  search5 = f"%{tags[4]}%"
+  search6 = f"%{tags[5]}%"
+
+  params = {"search1": search1, "search2": search2,"search3": search3,"search4": search4,"search5": search5,"search6": search6 }
+
+  query = text("SELECT model_id, model_name FROM user_uploads_model_with_citation WHERE model_name ILIKE :search1 OR tag1 ILIKE :search1 OR tag2 ILIKE :search1 OR tag3 ILIKE :search1 OR model_name ILIKE :search2 OR tag1 ILIKE :search2 OR tag2 ILIKE :search2 OR tag3 ILIKE :search2 OR model_name ILIKE :search3 OR tag1 ILIKE :search3 OR tag2 ILIKE :search3 OR tag3 ILIKE :search3 OR model_name ILIKE :search4 OR tag1 ILIKE :search4 OR tag2 ILIKE :search4 OR tag3 ILIKE :search4 OR model_name ILIKE :search5 OR tag1 ILIKE :search5 OR tag2 ILIKE :search5 OR tag3 ILIKE :search5 OR model_name ILIKE :search6 OR tag1 ILIKE :search6 OR tag2 ILIKE :search6 OR tag3 ILIKE :search6")
+
+  cursor = conn.execute(query,params)
+  conn.commit()
+
+  for i in cursor:
+    user_recommended_models.append(i)
+
+  query = text("SELECT dataset_id, dataset_name FROM user_uploads_dataset_with_citation WHERE dataset_name ILIKE :search1 OR tag1 ILIKE :search1 OR tag2 ILIKE :search1 OR tag3 ILIKE :search1 OR dataset_name ILIKE :search2 OR tag1 ILIKE :search2 OR tag2 ILIKE :search2 OR tag3 ILIKE :search2 OR dataset_name ILIKE :search3 OR tag1 ILIKE :search3 OR tag2 ILIKE :search3 OR tag3 ILIKE :search3 OR dataset_name ILIKE :search4 OR tag1 ILIKE :search4 OR tag2 ILIKE :search4 OR tag3 ILIKE :search4 OR dataset_name ILIKE :search5 OR tag1 ILIKE :search5 OR tag2 ILIKE :search5 OR tag3 ILIKE :search5 OR dataset_name ILIKE :search6 OR tag1 ILIKE :search6 OR tag2 ILIKE :search6 OR tag3 ILIKE :search6")
+
+  cursor = conn.execute(query,params)
+  conn.commit()
+
+  for i in cursor:
+    user_recommended_datasets.append(i)
+
+  
+
+  
+
+    
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+  return render_template("postlogin.html", userinputs=userinputs, trending_model=trending_model, trending_datasets = trending_datasets, user_recommended_models = user_recommended_models, user_recommended_datasets = user_recommended_datasets, tags = tags)
 
 
 
@@ -332,6 +468,9 @@ def upload_train_a_model():
   cluster_id = request.form.get("cluster_id")
   since = request.form.get("since")
 
+  session['latest_model_interacted'] = model_id
+  session['latest_dataset_interacted'] = dataset_id
+
   params_dict = {
     "model_id": model_id,
     "dataset_id": dataset_id,
@@ -346,19 +485,42 @@ def upload_train_a_model():
     "username": username
   }
 
+  print(since)
   query = text("INSERT INTO train (model_id, dataset_id, username) VALUES (:model_id, :dataset_id, :username)")
 
-  conn.execute(query,params_dict2)
-  conn.commit()
-
-  query = text("INSERT INTO trained_on (model_id, dataset_id, username, cluster_id, since) VALUES (:model_id, :dataset_id, :username, :cluster_id, :since)")
-
-  conn.execute(query,params_dict)
-  conn.commit()
+  # datetime.now()
+  # datetime -> since
   
+  if ( datetime.strptime(since, '%Y-%m-%dT%H:%M') <  datetime.now()):
+    try:
+      conn.execute(query,params_dict2)
+      conn.commit()
+    except:
+      conn.rollback()
+      return render_template('error.html')
+
+    query = text("INSERT INTO trained_on (model_id, dataset_id, username, cluster_id, since) VALUES (:model_id, :dataset_id, :username, :cluster_id, :since)")
+
+    try:
+      conn.execute(query,params_dict)
+      conn.commit()
+    except:
+      conn.rollback()
+      return render_template('error.html')
+  else:
+    return render_template('error.html')
 
   return redirect('/postlogin')
 
+  # query = text("INSERT INTO user_uploads_model_with_citation (model_id, model_name, num_parameters, num_layers, tag1, tag2, tag3, num_downloads, username, citation_ID) VALUES (:model_id, :model_name, :num_parameters, :num_layers, :tag1, :tag2, :tag3, :num_downloads, :username, :citation_id)")
+
+  # conn.execute(query, params_dict)
+  # conn.commit()
+
+  # query = text("INSERT INTO pretrained_on (dataset_id, model_id) VALUES (:dataset_id, :model_id)")
+
+  # conn.execute(query, params_dict2)
+  # conn.commit()
 
 
 @app.route("/train_history/<username>")
@@ -368,8 +530,12 @@ def train_history(username):
 
   params = {"username": username}
 
-  cursor = conn.execute(query,params)
-  conn.commit()
+  try:
+    cursor = conn.execute(query,params)
+    conn.commit()
+  except:
+    conn.rollback()
+    return render_template('error.html')
 
   list_of_train = []
 
@@ -475,6 +641,8 @@ def upload_model():
   citation_id = request.form.get("citation_id")
   dataset_id = request.form.get("dataset_id")
 
+  session['latest_model_interacted'] = model_id
+
 
   params_dict = {
         "model_id": model_id,
@@ -495,15 +663,22 @@ def upload_model():
   }
 
   query = text("INSERT INTO user_uploads_model_with_citation (model_id, model_name, num_parameters, num_layers, tag1, tag2, tag3, num_downloads, username, citation_ID) VALUES (:model_id, :model_name, :num_parameters, :num_layers, :tag1, :tag2, :tag3, :num_downloads, :username, :citation_id)")
-
-  conn.execute(query, params_dict)
-  conn.commit()
+  
+  try:
+    conn.execute(query, params_dict)
+    conn.commit()
+  except:
+    conn.rollback()
+    return render_template('error.html')
 
   query = text("INSERT INTO pretrained_on (dataset_id, model_id) VALUES (:dataset_id, :model_id)")
 
-  conn.execute(query, params_dict2)
-  conn.commit()
-
+  try:
+    conn.execute(query, params_dict2)
+    conn.commit()
+  except:
+    conn.rollback()
+    return render_template('error.html')
 
   return redirect('/models')
 
@@ -526,6 +701,8 @@ def upload_dataset():
     username = request.form.get("username")
     citation_id = request.form.get("citation_id")
 
+    session['latest_dataset_interacted'] = dataset_id
+
     params_dict = {
         "dataset_id": dataset_id,
         "dataset_name": dataset_name,
@@ -541,8 +718,12 @@ def upload_dataset():
 
     query = text("INSERT INTO user_uploads_dataset_with_citation (dataset_id, dataset_name, num_data_points, num_features, description, tag1, tag2, tag3, username, citation_id) VALUES (:dataset_id, :dataset_name, :num_data_points, :num_features, :description, :tag1, :tag2, :tag3, :username, :citation_id)")
 
-    conn.execute(query, params_dict)
-    conn.commit()
+    try:
+      conn.execute(query, params_dict)
+      conn.commit()
+    except:
+      conn.rollback()
+      return render_template('error.html')
 
     return redirect('/datasets')
 
@@ -571,8 +752,12 @@ def upload_citation():
 
     query = text("INSERT INTO citations (citation_id, author1, author2, year_published, conference) VALUES (:citation_id, :author1, :author2, :year_published, :conference)")
 
-    conn.execute(query, params_dict)
-    conn.commit()
+    try:
+      conn.execute(query, params_dict)
+      conn.commit()
+    except:
+      conn.rollback()
+      return render_template('error.html')
 
     return redirect('/citations')
 
@@ -589,6 +774,8 @@ def upload_dataset_review():
     username = request.form.get("username")
     dataset_id = request.form.get("dataset_id")
 
+    session['latest_dataset_interacted'] = dataset_id
+
     params_dict = {
         "review_id": review_id,
         "date_written": date_written,
@@ -600,8 +787,12 @@ def upload_dataset_review():
 
     query = text("INSERT INTO user_reviews_dataset (date_written, Review_ID, written_review, rating, Username, Dataset_ID) VALUES (:date_written, :review_id, :written_review, :rating, :username, :dataset_id)")
 
-    conn.execute(query, params_dict)
-    conn.commit()
+    try:
+      conn.execute(query, params_dict)
+      conn.commit()
+    except:
+      conn.rollback()
+      return render_template('error.html')
 
     return redirect(url_for('view_specific_dataset', dataset_id = dataset_id))
 
@@ -627,8 +818,12 @@ def upload_version_history(model_id):
 
     query = text("INSERT INTO logs_versionhistory (model_id, time_stamp, version) VALUES (:model_id, :time_stamp, :version)")
 
-    conn.execute(query, params_dict)
-    conn.commit()
+    try:
+      conn.execute(query, params_dict)
+      conn.commit()
+    except:
+      conn.rollback()
+      return render_template('error.html')
 
     return redirect(url_for('view_specific_model', model_id = model_id))
 
@@ -644,14 +839,25 @@ def delete_model(model_id):
   query = text("DELETE FROM pretrained_on WHERE model_id = :model_id")
   params_dict = {"model_id": model_id}
 
-  conn.execute(query, params_dict)
-  conn.commit()
+  if session['latest_model_interacted'] == model_id:
+    session['latest_model_interacted'] = None
+
+  try:
+    conn.execute(query, params_dict)
+    conn.commit()
+  except:
+    conn.rollback()
+    return render_template('error.html')
 
   query = text("DELETE FROM user_uploads_model_with_citation WHERE model_id = :model_id")
   params_dict = {"model_id": model_id}
 
-  conn.execute(query, params_dict)
-  conn.commit()
+  try:
+    conn.execute(query, params_dict)
+    conn.commit()
+  except:
+    conn.rollback()
+    return render_template('error.html')
 
   return redirect('/models')
 
@@ -661,8 +867,15 @@ def delete_dataset(dataset_id):
   query = text("DELETE FROM user_uploads_dataset_with_citation WHERE dataset_id = :dataset_id")
   params_dict = {"dataset_id": dataset_id}
 
-  conn.execute(query, params_dict)
-  conn.commit()
+  if session['latest_dataset_interacted'] == dataset_id:
+    session['latest_dataset_interacted'] = None
+
+  try:
+    conn.execute(query, params_dict)
+    conn.commit()
+  except:
+    conn.rollback()
+    return render_template('error.html')
 
   return redirect('/datasets')
 
@@ -695,13 +908,21 @@ def upload_free_tier():
 
   query = text("INSERT INTO customer (username, password, email) VALUES (:username, :password, :email)")
 
-  conn.execute(query,params_dict)
-  conn.commit()
+  try:
+    conn.execute(query,params_dict)
+    conn.commit()
+  except:
+    conn.rollback()
+    return render_template('error.html')
 
   query = text("INSERT INTO free_tier (username, num_downloads_left) VALUES (:username, :num_downloads_left)")
 
-  conn.execute(query,params_dict2)
-  conn.commit()
+  try:
+    conn.execute(query,params_dict2)
+    conn.commit()
+  except:
+    conn.rollback()
+    return render_template('error.html')
   
 
   return redirect('/login')
@@ -737,13 +958,21 @@ def upload_premium_tier():
 
   query = text("INSERT INTO customer (username, password, email) VALUES (:username, :password, :email)")
 
-  conn.execute(query,params_dict)
-  conn.commit()
+  try:
+    conn.execute(query,params_dict)
+    conn.commit()
+  except:
+    conn.rollback()
+    return render_template('error.html')
 
   query = text("INSERT INTO premium_tier (username, premium_compute_time_in_hours, start_date, end_date) VALUES (:username, :premium_compute_time_in_hours, :start_date, :end_date)")
 
-  conn.execute(query,params_dict2)
-  conn.commit()
+  try:
+    conn.execute(query,params_dict2)
+    conn.commit()
+  except:
+    conn.rollback()
+    return render_template('error.html')
   
 
   return redirect('/login')
@@ -767,70 +996,124 @@ def delete_a_user(username):
 @app.route('/download_model/<model_id>', methods = ["POST"])
 def download_model(model_id):
 
-  query = text("SELECT * FROM free_tier WHERE username = :username")
-  params = {"username": session["username"]}
+  session['latest_model_interacted'] = model_id
 
-  cursor = conn.execute(query,params)
-  conn.commit()
+  if session['tier'] == "free_tier":
 
-  _,num_downloads = cursor.fetchone()
+    query = text("SELECT * FROM free_tier WHERE username = :username")
+    params = {"username": session["username"]}
 
-  if num_downloads>0:
-
-    query = text("UPDATE free_tier SET num_downloads_left = :num_downloads_left WHERE username = :username")
-    params = {"username": session["username"], "num_downloads_left": num_downloads-1}
-
-    conn.execute(query,params)
+    cursor = conn.execute(query,params)
     conn.commit()
 
-    session["num_downloads_left"] -= 1
+    i = cursor.fetchone()
+
+    temp,num_downloads = i
+
+    if num_downloads>0:
+
+      query = text("UPDATE free_tier SET num_downloads_left = :num_downloads_left WHERE username = :username")
+      params = {"username": session["username"], "num_downloads_left": num_downloads-1}
+
+      try:
+        conn.execute(query,params)
+        conn.commit()
+      except:
+        conn.rollback()
+        return render_template('error.html')
+
+      session["num_downloads_left"] -= 1
+
+      query = text("INSERT INTO download_model (model_id, username) VALUES (:model_id, :username)")
+      params = {"model_id": model_id, "username": session["username"]}
+
+      try:
+        conn.execute(query, params)
+        conn.commit()
+      except:
+        conn.rollback()
+        return render_template('error.html')
+
+      return redirect('/models')
+
+    else:
+      return render_template("no_downloads_left.html")
+
+  else:
 
     query = text("INSERT INTO download_model (model_id, username) VALUES (:model_id, :username)")
     params = {"model_id": model_id, "username": session["username"]}
 
-    conn.execute(query, params)
-    conn.commit()
+    try:
+      conn.execute(query, params)
+      conn.commit()
+    except:
+      conn.rollback()
+      return render_template('error.html')
 
     return redirect('/models')
-
-  else:
-    return render_template("no_downloads_left.html")
-
   
 
 @app.route('/download_dataset/<dataset_id>', methods = ["POST"])
 def download_dataset(dataset_id):
 
-  query = text("SELECT * FROM free_tier WHERE username = :username")
-  params = {"username": session["username"]}
+  session['latest_dataset_interacted'] = dataset_id
 
-  cursor = conn.execute(query,params)
-  conn.commit()
+  if session['tier'] == "free_tier":
 
-  _,num_downloads = cursor.fetchone()
+    query = text("SELECT * FROM free_tier WHERE username = :username")
+    params = {"username": session["username"]}
 
-  if num_downloads>0:
-
-    query = text("UPDATE free_tier SET num_downloads_left = :num_downloads_left WHERE username = :username")
-    params = {"username": session["username"], "num_downloads_left": num_downloads-1}
-
-    conn.execute(query,params)
+    cursor = conn.execute(query,params)
     conn.commit()
 
-    session["num_downloads_left"] -= 1
+    i = cursor.fetchone()
+
+    temp,num_downloads = i
+
+    if num_downloads>0:
+
+      query = text("UPDATE free_tier SET num_downloads_left = :num_downloads_left WHERE username = :username")
+      params = {"username": session["username"], "num_downloads_left": num_downloads-1}
+
+      try:
+        conn.execute(query,params)
+        conn.commit()
+      except:
+        conn.rollback()
+        return render_template('error.html')
+
+      session["num_downloads_left"] -= 1
+
+      query = text("INSERT INTO download_dataset (dataset_id, username) VALUES (:dataset_id, :username)")
+      params = {"dataset_id": dataset_id, "username": session["username"]}
+
+      try:
+        conn.execute(query, params)
+        conn.commit()
+      except:
+        conn.rollback()
+        return render_template('error.html')
+
+      return redirect('/datasets')
+
+    else:
+      return render_template("no_downloads_left.html")
+
+  else:
 
     query = text("INSERT INTO download_dataset (dataset_id, username) VALUES (:dataset_id, :username)")
     params = {"dataset_id": dataset_id, "username": session["username"]}
 
-    conn.execute(query, params)
-    conn.commit()
+    try:
+      conn.execute(query, params)
+      conn.commit()
+    except:
+      conn.rollback()
+      return render_template('error.html')
 
     return redirect('/datasets')
-
-  else:
-    return render_template("no_downloads_left.html")
-
-
+    
 
 @app.route('/search_models_datasets', methods = ['POST'])
 def search_models_datasets():

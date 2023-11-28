@@ -24,8 +24,9 @@
     -->
     {% if session['username'] %}
         <h1>You are Logged in!</h1>
-        
+
     {% else %}
+
         <h1>Please Log In for full functionality</h1>
         <h3>Sample Premium tier username password:</h3>
         <h4>username: AnvithP</h4>
@@ -34,5 +35,48 @@
         <h4>username: Nav</h4>
         <h4>password: Travis</h4>
     {% endif %}
+
+    <br>
+    <br>
+
+    <h1>Trending Models and Datasets</h1>
+
+    <h2>Trending Models</h2>
+
+    <table>
+        <tr>
+        <th> Model ID</th>
+        <th> Model Name</th>
+        <th> Number of Downloads</th>
+        </tr>
+        {% for i in trending_model %}
+
+        <tr>
+            <td>{{ i[0] }}</td>
+            <td>{{ i[1] }}</td>
+            <td>{{ i[2] }}</td>
+        </tr>
+
+        {% endfor %}
+    </table>
+
+    <h2>Trending Datasets</h2>
+
+    <table>
+        <tr>
+        <th> Dataset ID</th>
+        <th> Dataset Name</th>
+        <th> Average Rating</th>
+        </tr>
+        {% for i in trending_datasets %}
+
+        <tr>
+            <td>{{ i[0] }}</td>
+            <td>{{ i[1] }}</td>
+            <td>{{ i[2] }}</td>
+        </tr>
+
+        {% endfor %}
+    </table>
 
 {% endblock %}
