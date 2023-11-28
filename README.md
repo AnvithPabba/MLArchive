@@ -59,6 +59,7 @@ We used ChatGPT to reproduce comparable HTML files since several webpages adhere
 
 example of the query used: 
 
+<<<<<<< HEAD
 -----
 &lt;html> <br/>
     &lt;body><br/>
@@ -66,35 +67,58 @@ example of the query used:
         &lt;form method="POST" action="/upload_model"><br/>
             &lt;label for="model_name">Model Name:&lt;/label><br/>
             &lt;input type="text" id="model_name" name="model_name" required>
+=======
+<!-- HTML CODE -->
+
+&lt;html&gt;
+
+    <body>;
+>>>>>>> 4a6b7afe6b639ef1fb719b61f1451dcb4935280a
     
-            <label for="num_parameters">Number of Parameters:</label>
-            <input type="number" id="num_parameters" name="num_parameters" required>
+        <h1>;Upload Model</h1>;
+        
+        <form method="POST" action="/upload_model">;
+        
+            <label for="model_name">;Model Name:&lt;/label>;
+            <input type="text" id="model_name" name="model_name" required>;
     
-            <label for="num_layers">Number of Layers:</label>
-            <input type="number" id="num_layers" name="num_layers" required>
+            <label for="num_parameters">;Number of Parameters:</label>;
+            <input type="number" id="num_parameters" name="num_parameters" required>;
     
-            <label for="tag1">Tag 1:</label>
-            <input type="text" id="tag1" name="tag1" required>
+            <label for="num_layers">;Number of Layers:</label>;
+            <input type="number" id="num_layers" name="num_layers" required>;
     
-            <label for="tag2">Tag 2:</label>
-            <input type="text" id="tag2" name="tag2">
+            <label for="tag1">;Tag 1:</label>;
+            <input type="text" id="tag1" name="tag1" required>;
     
-            <label for="tag3">Tag 3:</label>
-            <input type="text" id="tag3" name="tag3">
+            <label for="tag2">;Tag 2:</label>;
+            &lt;input type="text" id="tag2" name="tag2">;
     
-            <label for="num_downloads">Number of Downloads:</label>
-            <input type="number" id="num_downloads" name="num_downloads" required>
+            <label for="tag3">;Tag 3:</label>;
+            <input type="text" id="tag3" name="tag3">;
     
-            <label for="username">Username:</label>
-            <input type="text" id="username" name="username" required>
+            <label for="num_downloads">;Number of Downloads:</label>;
+            <input type="number" id="num_downloads" name="num_downloads" required>;
     
-            <label for="citation_id">Citation ID:</label>
-            <input type="number" id="citation_id" name="citation_id" required>
+            <label for="username">;Username:</label>;
+            <input type="text" id="username" name="username" required>;
     
+<<<<<<< HEAD
             <button type="submit">Upload Model</button>
         </form>
     </body>
 &lt;/html>" create something similar for CREATE TABLE User_Uploads_Dataset_With_Citation(
+=======
+            <label for="citation_id">;Citation ID:</label>;
+            <input type="number" id="citation_id" name="citation_id" required>;
+    
+            <button type="submit">;Upload Model</button>;
+        </form>;
+    </body>;
+&lt;/html&gt;
+
+create something similar for CREATE TABLE User_Uploads_Dataset_With_Citation(
+>>>>>>> 4a6b7afe6b639ef1fb719b61f1451dcb4935280a
     Dataset_ID int primary key,
     Dataset_name varchar(50) UNIQUE,
     Num_data_points int,
