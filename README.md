@@ -59,21 +59,11 @@ We used ChatGPT to reproduce comparable HTML files since several webpages adhere
 
 example of the query used: 
 
-<<<<<<< HEAD
------
-&lt;html> <br/>
-    &lt;body><br/>
-        &lt;h1>Upload Model&lt;/h1><br/>
-        &lt;form method="POST" action="/upload_model"><br/>
-            &lt;label for="model_name">Model Name:&lt;/label><br/>
-            &lt;input type="text" id="model_name" name="model_name" required>
-=======
 <!-- HTML CODE -->
 
 &lt;html&gt;
 
     <body>;
->>>>>>> 4a6b7afe6b639ef1fb719b61f1451dcb4935280a
     
         <h1>;Upload Model</h1>;
         
@@ -103,12 +93,6 @@ example of the query used:
             <label for="username">;Username:</label>;
             <input type="text" id="username" name="username" required>;
     
-<<<<<<< HEAD
-            <button type="submit">Upload Model</button>
-        </form>
-    </body>
-&lt;/html>" create something similar for CREATE TABLE User_Uploads_Dataset_With_Citation(
-=======
             <label for="citation_id">;Citation ID:</label>;
             <input type="number" id="citation_id" name="citation_id" required>;
     
@@ -118,7 +102,6 @@ example of the query used:
 &lt;/html&gt;
 
 create something similar for CREATE TABLE User_Uploads_Dataset_With_Citation(
->>>>>>> 4a6b7afe6b639ef1fb719b61f1451dcb4935280a
     Dataset_ID int primary key,
     Dataset_name varchar(50) UNIQUE,
     Num_data_points int,
