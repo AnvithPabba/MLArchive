@@ -8,9 +8,9 @@
 
 ## <b>About the Website - </b>
 
-* Our project is all about creating a helpful tool for people interested in machine learning. 
+* Our project is all about creating a helpful tool for people interested in machine learning to upload, download, review and search through models and datasets. 
 
-* It's like a big library that stores lots of machine learning models and datasets, making it easy for anyone to learn and experiment with machine learning. 
+* It's like a big library that stores lots of machine learning models and datasets, making it easy for anyone to learn and experiment with machine learning. Users can keep track of the most popular/best rated models and datsets while receiving tailored models and dataset recommendations.
 
 <br/>
 
@@ -18,17 +18,17 @@
 
 We were able to implement everything as part of out Part 1 and Part 2 design plan. We made a slight tweak replacing version history with keeping a training log whenever a user trains a model.
 
-* <b> Search through Datasets </b> - Search through the catalog of uploaded datasets based on the name of the dataset or assosciated tags. For example, the user could search for "image classification" datasets or "NER" datasets.
+* <b> Search through Datasets </b> - Search through the catalog of uploaded datasets based on the name of the dataset or assosciated tags. For example, the user could search for "classification" datasets or "NER" datasets.
 
-* <b> Search through Models </b> - Search through the catalog of uploaded models based on name of the model or assosciated tags. For example, the user could search for "image classification" models or "NLI" models.
+* <b> Search through Models </b> - Search through the catalog of uploaded models based on name of the model or assosciated tags. For example, the user could search for "text generation" models, "image classification" models or "NLI" models.
 
-* <b> Search Authors </b> - A user can search for authors who have published models in a particular field (we take the user input for this) after a particular year (the user inputs this as well).
+* <b> Search for relevant Authors in a field</b> - A user can search for authors who have published models in a particular field (we take the user input for this) after a particular year (the user inputs this as well).
 
 * <b> Trending Section </b> - When you land on the webpage you see a trending section, which lists the top datasets/models being used in the ML community. We use the review ratings as a metric to rank datasets. For models, we rank it by the number of downloads.
 
 * <b> Citations Page </b> - Here you can look at all the citations associated with every model and dataset.
 
-* <b> User Login </b> - Get separate login pages based on if the user is a <b>free tier user</b> or a <b>premium tier user</b>. As a premium tier, the user gets more functionalities, such as training models on a remote server. 
+* <b> User Login </b> - The home page has different functionality depending on whether the user is a <b>free tier user</b> or a <b>premium tier user</b>. As a premium tier, the user gets more functionalities, such as training models on a remote server. 
 
 * <b> User Functionalities </b> - The functionalities on the website differ if the user is either <b> free tier </b> or <b> premium tier </b>. All functionalities of a <b> free tier </b> user is available to the <b> premium tier </b> but not the vice versa. 
 
@@ -42,7 +42,7 @@ We were able to implement everything as part of out Part 1 and Part 2 design pla
 
     * <b> Write a review </b> - A user can post a text review about the dataset along with rating the dataset on a scale of 0-5.
 
-    * <b> Recommnedation System </b> - One interesting aspect here is that, as the user interacts with the interface, the trending section updates itself to show models/datasets that align well with the models/datasets the user has worked with previously and are also better rated in the commmunity. 
+    * <b> Recommendation System </b> - One interesting aspect here is that, as the user interacts with the interface, the trending section updates itself to show models/datasets that align well with the models/datasets the user has worked with previously and are also better rated in the commmunity. 
 
 <br/>
 
@@ -58,12 +58,14 @@ We were able to implement everything as part of out Part 1 and Part 2 design pla
 We used ChatGPT to reproduce comparable HTML files since several webpages adhered to a common template, with only slight variations in the naming. For instance, upload_dataset_form.html and upload_model_form.html share a similar structure, differing primarily in the text content. The following are the queries we used - 
 
 example of the query used: 
-"<html>
-    <body>
-        <h1>Upload Model</h1>
-        <form method="POST" action="/upload_model">
-            <label for="model_name">Model Name:</label>
-            <input type="text" id="model_name" name="model_name" required>
+
+-----
+&lt;html> <br/>
+    &lt;body><br/>
+        &lt;h1>Upload Model&lt;/h1><br/>
+        &lt;form method="POST" action="/upload_model"><br/>
+            &lt;label for="model_name">Model Name:&lt;/label><br/>
+            &lt;input type="text" id="model_name" name="model_name" required>
     
             <label for="num_parameters">Number of Parameters:</label>
             <input type="number" id="num_parameters" name="num_parameters" required>
@@ -92,7 +94,7 @@ example of the query used:
             <button type="submit">Upload Model</button>
         </form>
     </body>
-</html>" create something similar for CREATE TABLE User_Uploads_Dataset_With_Citation(
+&lt;/html>" create something similar for CREATE TABLE User_Uploads_Dataset_With_Citation(
     Dataset_ID int primary key,
     Dataset_name varchar(50) UNIQUE,
     Num_data_points int,
