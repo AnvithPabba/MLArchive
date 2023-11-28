@@ -58,12 +58,12 @@ We were able to implement everything as part of out Part 1 and Part 2 design pla
 We used ChatGPT to reproduce comparable HTML files since several webpages adhered to a common template, with only slight variations in the naming. For instance, upload_dataset_form.html and upload_model_form.html share a similar structure, differing primarily in the text content. The following are the queries we used - 
 
 example of the query used: 
-"<html>
-    <body>
-        <h1>Upload Model</h1>
-        <form method="POST" action="/upload_model">
-            <label for="model_name">Model Name:</label>
-            <input type="text" id="model_name" name="model_name" required>
+"&lt;html>
+    &lt;body>
+        &lt;h1>Upload Model&lt;/h1>
+        &lt;form method="POST" action="/upload_model">
+            &lt;label for="model_name">Model Name:</label>
+            &lt;input type="text" id="model_name" name="model_name" required>
     
             <label for="num_parameters">Number of Parameters:</label>
             <input type="number" id="num_parameters" name="num_parameters" required>
