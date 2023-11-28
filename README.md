@@ -10,7 +10,7 @@
 
 * Our project is all about creating a helpful tool for people interested in machine learning to upload, download, review and search through models and datasets. 
 
-* It's like a big library that stores lots of machine learning models and datasets, making it easy for anyone to learn and experiment with machine learning. Users can keep track of the most popular/best rated models and datsets while receiving tailored models and dataset recommendations.
+* It's like a big library that stores lots of machine learning models and datasets, making it easy for anyone to learn and experiment with machine learning. Users can keep track of the most popular/best rated models and datsets while receiving tailored models and dataset recommendations based on their past interactions.
 
 <br/>
 
@@ -20,9 +20,9 @@ We were able to implement everything as part of out Part 1 and Part 2 design pla
 
 * <b> Search through Datasets </b> - Search through the catalog of uploaded datasets based on the name of the dataset or assosciated tags. For example, the user could search for "classification" datasets or "NER" datasets.
 
-* <b> Search through Models </b> - Search through the catalog of uploaded models based on name of the model or assosciated tags. For example, the user could search for "text generation" models, "image classification" models or "NLI" models.
+* <b> Search through Models </b> - Search through the catalog of uploaded models based on name of the model or assosciated tags. For example, the user could search for "text generation" models, "image classification" models or "NLI" models. Both of these can be done from the search bar in the homepage.
 
-* <b> Search for relevant Authors in a field</b> - A user can search for authors who have published models in a particular field (we take the user input for this) after a particular year (the user inputs this as well).
+* <b> Search for relevant Authors in a field</b> - A user can search for authors who have published models in a particular field (we take the user input for this) after a particular year (the user inputs this as well), through the citations page.
 
 * <b> Trending Section </b> - When you land on the webpage you see a trending section, which lists the top datasets/models being used in the ML community. We use the review ratings as a metric to rank datasets. For models, we rank it by the number of downloads.
 
@@ -34,7 +34,7 @@ We were able to implement everything as part of out Part 1 and Part 2 design pla
 
     * <b> View Training Logs </b> - Whenever a user trains a model, these logs are saved which the user can look at later. 
 
-    * <b> Upload Models or Datasets </b> - A user can upload models or datasets to the database. When uploading a model, we also edit the pretrained_on table to keep track of what models are pretrained_on which dataset.
+    * <b> Upload Models or Datasets </b> - A user can upload models or datasets to the database. When uploading a model, we also edit the pretrained_on table to keep track of what models are pretrained_on which dataset. Once a free tier member has exhausted all their downloads, they will not be able to download any more models.
 
     * <b> Download Models or Datasets </b> -  A user can download models or datasets. A free user can download only a limited set of these while a premium user has an infinite access to downloads.
 
@@ -50,7 +50,7 @@ We were able to implement everything as part of out Part 1 and Part 2 design pla
 
 * <b> Postlogin page (Homepage) </b> - The post-login or the homepage is the main page connecting to three other pages - Models, Datasets and Citations. A logged in user also has the option to delete their account or sign out, while a guest user will be re-directed to a sign-in page to create a new account and login if needed. The homepage consists of a search bar called "Search_Models_Dataset" that lets users explore models and datasets by names or associated tags. For instance, if a user looks for "classification," the system executes a database query, finding models and datasets that match this criteria. An interesting aspect for premium users is the ability to train a model, in SQL this is equivalent to inserting entries into the table. Users can also check their training history, listing all the models and datasets they've trained before. Another interesting aspect is the trending page which lists all the top models and datasets being used in the community ranked by the number of downloads and average rating respectively. The database operation involves selecting the top 5 and ordering them by these criteria. Moreoever, this list adds a section of "Relevant to you" as users interact with models, providing an update to the recommendations based on their last use. In terms of database operations, we build this recommendation by doing a search over all the models with the tags of the last interacted model.
 
-* <b> Datasets Webpage </b> - The next interesting webpage would be the Datasets webpage which gives the functionality of Downloading, Uploading, Deleting and Reviewing. Delete translates to removing an entry from a table in the database, upload translates to adding a new entry. Downloading saves the information to another table called "download_dataset". Review allows the user to add a text review and a numeric rating to any particular dataset. This also translates to adding data to the database.
+* <b> Datasets Webpage </b> - The next interesting webpage would be the Datasets webpage which gives the functionality of Downloading, Uploading, Deleting and Reviewing. Delete translates to removing an entry from a table in the database, upload translates to adding a new entry. Downloading saves the information to another table called "download_dataset". Review allows the user to add a text review and a numeric rating to any particular dataset. This also translates to adding data to the database. Also, if a user clicks on any of the datasets, they will be redirected to a page containing all the data of the dataset and the reviews users have posted about the dataset.
 <br/>
 
 ## <b>Use of AI tools </b>
