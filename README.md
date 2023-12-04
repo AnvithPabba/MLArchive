@@ -1,10 +1,10 @@
 # MLArchive - A Hub for ML Models & Datasets
 
-### <b>The PostgreSQL account where your database on our server resides</b> - nj2513 
+<!-- ### <b>The PostgreSQL account where your database on our server resides</b> - nj2513 
 <br/>
 
 ### <b>The URL of your web application</b> - 34.138.224.77 
-<br/>
+<br/> -->
 
 ## <b>About the Website - </b>
 
@@ -53,7 +53,7 @@ We were able to implement everything as part of out Part 1 and Part 2 design pla
 * <b> Datasets Webpage </b> - The next interesting webpage would be the Datasets webpage which gives the functionality of Downloading, Uploading, Deleting and Reviewing. Delete translates to removing an entry from a table in the database, upload translates to adding a new entry. Downloading saves the information to another table called "download_dataset". Review allows the user to add a text review and a numeric rating to any particular dataset. This also translates to adding data to the database. Also, if a user clicks on any of the datasets, they will be redirected to a page containing all the data of the dataset and the reviews users have posted about the dataset.
 <br/>
 
-## <b>Use of AI tools </b>
+<!-- ## <b>Use of AI tools </b>
 
 We used ChatGPT to reproduce comparable HTML files since several webpages adhered to a common template, with only slight variations in the naming. For instance, upload_dataset_form.html and upload_model_form.html share a similar structure, differing primarily in the text content. The following are the queries we used - 
 
@@ -116,4 +116,4 @@ create something similar for CREATE TABLE User_Uploads_Dataset_With_Citation(
     CHECK (Num_features > 0)
 );
 
-<br/>
+<br/> -->
