@@ -57,11 +57,11 @@ We were able to implement everything as part of out Part 1 and Part 2 design pla
 
 We used ChatGPT to reproduce comparable HTML files since several webpages adhered to a common template, with only slight variations in the naming. For instance, upload_dataset_form.html and upload_model_form.html share a similar structure, differing primarily in the text content. The following are the queries we used - 
 
-example of the query used: 
+example of the query used: -->
 
 <!-- HTML CODE -->
 
-&lt;html&gt;
+<!-- &lt;html&gt;
 
     <body>;
     
